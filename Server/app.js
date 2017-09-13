@@ -13,6 +13,9 @@ app.use(update)
 const money = require("./Router/money")
 app.use(money)
 
+const purchase = require("./Router/purchase")
+app.use(purchase)
+
 app.listen(3000, function(req, res) {
   console.log("do work")
 })
