@@ -2,6 +2,13 @@ const express = require("express")
 const router = express.Router()
 const models = require("../models")
 
+//
+router.get("/api/vendor/purchases", function(req, res) {
+  models.log.findAll().then(function(log) {
+    res.json(log)
+  })
+})
+
 router.post("/api/customer/items/:itemId/purchases", function(req, res) {
   let purchaseMoney = req.body.moneyGiven
   models.vendingItems
@@ -19,9 +26,23 @@ router.post("/api/customer/items/:itemId/purchases", function(req, res) {
           if (change >= 0) {
             moneysRecord.totalmoney += item.cost
           }
-          moneysRecord.save().then(function(money) {
-            res.json({ item: item, money: money })
-          })
+          moneysRecord
+            .save()
+            .then(function() {
+              let moneyCounter = models.moneycounter.build({
+                currentmoney: moneysRecord.totalmoney
+              })
+              moneyCounter.save()
+            })
+            .then(function() {
+              let newLog = models.log.build({
+                name: item.name
+              })
+              newLog.save()
+            })
+            .then(function(money) {
+              res.json({ item: item, money: money })
+            })
         })
       })
     })
