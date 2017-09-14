@@ -12,23 +12,22 @@ router.post("/api/customer/items/:itemId/purchases", function(req, res) {
     })
     .then(function(item) {
       let change = purchaseMoney - item.cost
-      item.quantity -= (1).item.save().then(function(item) {
-        models.moneys.find().then(function(money) {
-          if (change > 0) {
-            money.totalmoney += item.cost
+      item.quantity -= 1
+      item.save().then(function() {
+        models.moneys.findAll().then(function(moneys) {
+          const moneysRecord = moneys[0]
+          if (change >= 0) {
+            moneysRecord.totalmoney += item.cost
           }
-        })
-        moneys.save().then(function(money) {
-          res.json({
-            item: item
+          moneysRecord.save().then(function(money) {
+            res.json({ item: item, money: money })
           })
         })
       })
     })
     .catch(function(error) {
-      res.status(404).json({
-        errorMessage: "ERROR"
-      })
+      res.status(404).json(error)
     })
 })
+
 module.exports = router
